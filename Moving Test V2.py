@@ -1,0 +1,217 @@
+print "Welcome to Dungeon Moving v.1.0 (since I started counting)"
+print "w is up, a is left, s is down, d is right, e is end, and i is open your inventory"
+
+room = []
+
+size = 7
+for x in range(0, size):
+  room.append(["#"] * size)
+
+def print_room(room):
+  for row in room:
+    print " ".join(row)
+    
+nerds = [0, size - 1]
+for le in nerds:
+  for i in range(0, size):
+    room[le][i] = "B"
+    room[i][le] = "B"
+    
+room[3][6] = "D"
+
+  
+room[1][2] = "W"
+room[2][2] = "W"
+room[3][2] = "W"
+room[4][2] = "W"
+
+motion = False
+
+inv = []
+chestque = ""
+
+class chest(object):
+  def __init__(self, y, x, things):
+    self.y = y
+    self.x = x
+    self.things = things
+    
+  def chestplace(self):
+    room[self.y][self.x] = "C"
+    
+  def openingchest(self):
+    print self.things
+    global chestque
+    if self.things == []:
+      aredone = 1
+    else:
+      aredone = 0
+    passo = False
+    tradedone = 0
+    while aredone == 0:
+      chestque = raw_input("What do you want?")
+      passo = 0
+      if chestque == "all":
+        tradedone = 1
+        global inv
+        for ele in self.things:
+          print ele + "debug"
+          inv.append(ele)
+        self.things = []
+        print self.things
+      elif chestque == "null":
+        tradedone = 1
+      else:
+        for i in self.things:
+          passo = False
+          print i + " debug"
+          if chestque == i:
+            global inv
+            tradedone = 1
+            inv.append(chestque)
+            self.things.remove(chestque)
+            print self.things
+          else:
+            pass
+      if tradedone == 1:
+          pass
+      else:
+          print "Not Found"
+      if tradedone == 0:
+        pass
+      else:
+        de = raw_input("Are you done? Yes or No?: ")
+        if de == "No":
+          passo = True
+        elif de == "Yes":
+          if passo == False:
+            print "Thanks for shopping!"
+            aredone = 1
+          else:
+            pass
+        else:
+          print "Guess you're not done????"
+    print "Bye!"
+  
+chest_4_4 = chest(4, 4, ["shirt", "apple", "stick", "banana"])
+chest_4_4.chestplace()
+
+chest_2_1 = chest(2, 1, ["flint", "iron", "coal"])
+chest_2_1.chestplace()
+
+list_of_chests = [chest_4_4, chest_2_1]
+
+def openchest(y, x):
+  print "CHEST BOI"
+  global list_of_chests
+  for i in list_of_chests:
+    if i.y == y and i.x == x:
+      i.openingchest()
+  global xcoord
+  global ycoord
+  rebound(y, x)
+
+def rebound(yco, xco):
+  global ycoord
+  global xcoord
+  if user_input == "w":
+      yco += 1
+      ycoord += 1
+      room[yco][xco] = "G"
+      print_room(room)
+  elif user_input == "s":
+      yco -= 1
+      ycoord -= 1
+      room[yco][xco] = "G"
+      print_room(room)  
+  elif user_input == "a":
+      xco += 1
+      xcoord += 1
+      room[yco][xco] = "G"
+      print_room(room)
+  elif user_input == "d":
+      xco -= 1
+      xcoord -= 1
+      room[yco][xco] = "G"
+      print_room(room)
+      
+ycoord = size / 2
+xcoord = size / 2
+room[xcoord][ycoord] = "G"
+
+print_room(room)
+
+def testspot(yco, xco):
+  if room[yco][xco] == "#":
+    room[yco][xco] = "G"
+    print_room(room)
+  elif room[yco][xco] == "C":
+    openchest(yco, xco)
+  else:
+    print "WALL BOI"
+    global user_input
+    global xcoord
+    global ycoord
+    rebound(yco, xco)  
+
+running = 0
+death = False
+def turn(run):
+    global running
+    running += 1
+    global user_input
+    user_input = raw_input("Enter: ")
+    
+def move(direction):
+    global ycoord
+    global xcoord
+    global motion
+    motion = True
+    if direction == "w":
+      if ycoord == 0:
+        print "There is no door there."
+        print_room(room)
+      else:
+        room[ycoord][xcoord] = "#"
+        ycoord -= 1
+        testspot(ycoord, xcoord)
+    elif direction == "s":
+      if ycoord == (size - 1):
+        print "There is no door there."
+        print_room(room)
+      else:
+        room[ycoord][xcoord] = "#"
+        ycoord += 1
+        testspot(ycoord, xcoord)
+    elif direction == "a":
+      if xcoord == 0:
+        print "There is no door there."
+        print_room(room)
+      else:
+        room[ycoord][xcoord] = "#"
+        xcoord -= 1
+        testspot(ycoord, xcoord)
+    elif direction == "d":
+      if xcoord == (size - 1):
+        print "There is no door there."
+        print_room(room)
+      else:
+        room[ycoord][xcoord] = "#"
+        xcoord += 1
+        testspot(ycoord, xcoord)
+    else:
+      print "lol wut"  
+
+while running >= 0 and death == False:
+  turn(8)
+  print running
+  global user_input
+  if user_input == "e":
+    break
+  elif user_input == "sad":
+    death = True
+  elif user_input == "i":
+    inv.sort()
+    print inv
+  else:
+    move(user_input)
